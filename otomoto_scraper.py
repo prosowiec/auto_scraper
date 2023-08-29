@@ -94,8 +94,12 @@ class Links:
         eng_cap = 0
         info = info.split(" • ")[:2]
         for word in info:
-            if "KM" in word:
+            if word.endswith("KM") and len(word) <= 8:
+                word = word.replace("KM", "")
+                pattern = re.compile(r'\s+')
+                word = re.sub(pattern, '', word)
                 power = word
+                
             if "cm3" in word:
                 eng_cap = word
                 
@@ -257,14 +261,14 @@ def remove_outliers(filename = f"otomoto_{datetime.today().strftime('%Y-%m-%d')}
                 for power in power_list:
                     power_df = year_df[year_df["power"] == power].copy(deep = True)
         
-                    if power_df.shape[0] < 30:
+                    if power_df.shape[0] < 10:
                         out = pd.concat([power_df, out], axis = 0)
                         continue
                 
                     power_df = get_df_without_outliers(power_df, ["mileage", "price"])
                     out = pd.concat([power_df, out], axis = 0)
 
-    out.to_csv("data\\" + filename, index = False)
+    out.to_csv(filename, index = False)
 
 
 
